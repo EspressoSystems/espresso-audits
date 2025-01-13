@@ -11,7 +11,7 @@ Internal audits
 
 | Scope & Delivery date                                                | Report                                                             |
 |----------------------------------------------------------------------| ------------------------------------------------------------------ |
-| Fee Contract - August 2, 2024                                        | [Reports](./internal-reviews/EspressoFeeContract-2024internal.pdf) |
-| Functions new_legacy and validate_and_apply_header - October 4, 2024 | [Reports](./internal-reviews//Sequencer/EspressoSequencer-2024internal.pdf)   |
-| HotShot - July 29, 2024                                              | [Reports](./internal-reviews/HotShot/EspressoHotShot-2024internal.pdf)   |
+| Fee Contract - August 2, 2024                                        | [Reports](./internal-reviews/Sequencer/EspressoFeeContract-2024internal.pdf) |
+| Functions new_legacy and validate_and_apply_header - October 4, 2024 | [Reports](./internal-reviews/Sequencer/EspressoSequencer-2024internal.pdf)   |
+| HotShot - July 29, 2024                                              | [Reports](./internal-reviews/HotShot/EspressoHotshot-2024internal.pdf)   |
 
