@@ -2,13 +2,14 @@
 
 External audits
 
-| Team                                           | Scope & Delivery date                                | Report                                                              |
-| ---------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------- |
-| [Common Prefix](https://www.commonprefix.com/) | Plonk verifier - September 2, 2024                   | [Link](./external-reviews/EspressoPlonk-2024.pdf)                   |
-| [Common Prefix](https://www.commonprefix.com/) | Light Client Contract - November 8, 2024             | [Link](./external-reviews/EspressoHotshotLightClient-2024.pdf)      |
-| [Cantina](https://cantina.xyz)                 | Nitro Integration - January 3, 2025                  | [Link](./external-reviews/EspressoNitroIntegration-2025.pdf)        |
-| [Informal Systems](https://informal.systems/)  | Hotshot Epoch Transition - April 9, 2025             | [Link](./external-reviews/EspressoEpochTransition-2025.pdf)         |
-| [Cantina](https://cantina.xyz)                 | Merkle Tree And BLS Signature scheme - May 6, 2025   | [Link](./external-reviews/EspressoMerkleTree&BLSSignature-2025.pdf) |
+| Team                                                     | Scope & Delivery date                                | Report                                                              |
+| -------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------- |
+| [Common Prefix](https://www.commonprefix.com/)           | Plonk verifier - September 2, 2024                   | [Link](./external-reviews/EspressoPlonk-2024.pdf)                   |
+| [Common Prefix](https://www.commonprefix.com/)           | Light Client Contract - November 8, 2024             | [Link](./external-reviews/EspressoHotshotLightClient-2024.pdf)      |
+| [Cantina](https://cantina.xyz)                           | Nitro Integration - January 3, 2025                  | [Link](./external-reviews/EspressoNitroIntegration-2025.pdf)        |
+| [Informal Systems](https://informal.systems/)            | Hotshot Epoch Transition - April 9, 2025             | [Link](./external-reviews/EspressoEpochTransition-2025.pdf)         |
+| [Cantina](https://cantina.xyz)                           | Merkle Tree And BLS Signature scheme - May 6, 2025   | [Link](./external-reviews/EspressoMerkleTree&BLSSignature-2025.pdf) |
+| [Runtime Verification](https://runtimeverification.com/) | ESP token - November 13, 2025                        | [Link](./external-reviews/EspTokenV2-2025.pdf) |
 
 
 Internal audits
