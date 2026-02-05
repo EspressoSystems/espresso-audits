@@ -10,6 +10,7 @@ External audits
 | [Informal Systems](https://informal.systems/)            | Hotshot Epoch Transition - April 9, 2025             | [Link](./external-reviews/EspressoEpochTransition-2025.pdf)         |
 | [Cantina](https://cantina.xyz)                           | Merkle Tree And BLS Signature scheme - May 6, 2025   | [Link](./external-reviews/EspressoMerkleTree&BLSSignature-2025.pdf) |
 | [Runtime Verification](https://runtimeverification.com/) | ESP token - November 13, 2025                        | [Link](./external-reviews/EspTokenV2-2025.pdf) |
+| [Runtime Verification](https://runtimeverification.com/) | POS (Proof of Stake Contracts) - November 24, 2025             | [Link](./external-reviews/EspressoSystems-POS-Nov2025.pdf) |
 
 
 Internal audits
