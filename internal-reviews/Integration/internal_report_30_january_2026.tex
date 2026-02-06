@@ -1,0 +1,778 @@
+\documentclass[11pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{booktabs}
+
+% Page geometry
+\geometry{
+    a4paper,
+    margin=1in,
+    headheight=15pt
+}
+
+% Colors
+\definecolor{critical}{RGB}{220,38,38}
+\definecolor{high}{RGB}{234,88,12}
+\definecolor{medium}{RGB}{234,179,8}
+\definecolor{low}{RGB}{34,197,94}
+\definecolor{codebackground}{RGB}{248,248,248}
+\definecolor{linkcolor}{RGB}{37,99,235}
+
+% Hyperref setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=linkcolor,
+    filecolor=linkcolor,
+    urlcolor=linkcolor,
+    citecolor=linkcolor,
+    pdftitle={Security Audit Report - Optimism-Espresso Integration},
+    pdfauthor={Internal Security Team},
+    pdfsubject={Security Audit},
+    pdfkeywords={Security, Audit, Optimism, Espresso, TEE}
+}
+
+% Code listing settings
+\lstset{
+    basicstyle=\ttfamily\small,
+    backgroundcolor=\color{codebackground},
+    frame=single,
+    framesep=5pt,
+    breaklines=true,
+    keepspaces=true,
+    showstringspaces=false,
+    columns=flexible,
+    tabsize=4
+}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Security Audit Report}
+\fancyhead[R]{\small January 2026}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Title formatting
+\titleformat{\section}
+    {\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}
+    {\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+    {\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+% Custom commands for severity badges
+\newcommand{\critical}[1]{\textcolor{critical}{\textbf{#1}}}
+\newcommand{\high}[1]{\textcolor{high}{\textbf{#1}}}
+\newcommand{\medium}[1]{\textcolor{medium}{\textbf{#1}}}
+\newcommand{\low}[1]{\textcolor{low}{\textbf{#1}}}
+
+% Title page
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+
+    % Title with Espresso branding
+    {\fontsize{60}{72}\selectfont\textbf{ESPRESSO}\par}
+    \vspace{0.5cm}
+    {\Large\textit{Systems}\par}
+    \vspace{2cm}
+
+    {\Huge\bfseries Security Audit Report\par}
+    \vspace{1cm}
+    {\Large Optimism-Espresso Integration:\par}
+    {\Large OP Streamer \& TEE Contracts\par}
+    \vspace{2cm}
+
+    \begin{tcolorbox}[colback=gray!10,colframe=gray!50,width=0.8\textwidth,arc=3mm,boxrule=0.5pt]
+        \begin{tabular}{ll}
+            \textbf{Report Date:} & January 29, 2026 \\
+            \textbf{Audit Scope:} & OP Streamer Component \& TEE Contracts \\
+            \textbf{Version:} & v0.5.0 \\
+            \textbf{Auditors:} & Internal Security Team \\
+            \textbf{Status:} & Active Development \\
+        \end{tabular}
+    \end{tcolorbox}
+
+    \vfill
+
+    {\large Espresso Systems\par}
+    {\large \today\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Executive Summary}
+
+This report presents the findings of a security audit of the Optimism-Espresso integration, focusing on the OP Streamer component and TEE (Trusted Execution Environment) contracts. The audit identified \textbf{14 vulnerabilities} (2 Critical, 4 High, 1 Medium, 7 Low) across batch streaming logic, TEE networking, and smart contract implementations.
+
+\subsection{Severity Distribution}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Severity} & \textbf{Count} & \textbf{Fixed} & \textbf{Open} \\
+\midrule
+\critical{Critical} & 2 & 2 & 0 \\
+\high{High} & 4 & 1 & 3 \\
+\medium{Medium} & 1 & 0 & 1 \\
+\low{Low} & 7 & 0 & 7 \\
+\midrule
+\textbf{Total} & \textbf{14} & \textbf{3} & \textbf{11} \\
+\bottomrule
+\end{tabular}
+\caption{Vulnerability Severity Distribution}
+\end{table}
+
+\subsection{Key Findings Summary}
+
+\begin{longtable}{|p{0.8cm}|p{4cm}|p{1.5cm}|p{2.5cm}|p{1.5cm}|}
+\hline
+\textbf{ID} & \textbf{Vulnerability} & \textbf{Severity} & \textbf{Component} & \textbf{Status} \\
+\hline
+\endfirsthead
+\hline
+\textbf{ID} & \textbf{Vulnerability} & \textbf{Severity} & \textbf{Component} & \textbf{Status} \\
+\hline
+\endhead
+\hline
+\endfoot
+V-4 & Cross-Chain Deployment & \critical{Critical} & TEE Contracts & Fixed \\
+\hline
+V-6 & Missing Journal Validations & \critical{Critical} & TEE Contracts & Fixed \\
+\hline
+V-2 & Infinite Buffer Growth & \high{High} & OP Streamer & Open \\
+\hline
+V-3 & TEE Networking MitM & \high{High} & TEE Enclave & Open \\
+\hline
+V-5 & Signer Deletion DoS & \high{High} & TEE Contracts & Fixed \\
+\hline
+V-7 & Type Mismatch in Refresh() & \high{High} & OP Streamer & Open \\
+\hline
+V-1 & All-At-Once RPC Calls & \medium{Medium} & OP Streamer & Open \\
+\hline
+V-8 & Missing Duplicate Detection & \low{Low} & OP Streamer & Open \\
+\hline
+V-9 & Misleading Log Messages & \low{Low} & OP Streamer & Open \\
+\hline
+V-10 & Inefficient Batch Overwrite & \low{Low} & OP Streamer & Open \\
+\hline
+V-11 & Confusing Variable Naming & \low{Low} & OP Streamer & Open \\
+\hline
+V-12 & Unused Constant Declaration & \low{Low} & OP Streamer & Open \\
+\hline
+V-13 & Missing Sort Order Validation & \low{Low} & OP Streamer & Open \\
+\hline
+V-14 & No Network Failure Distinction & \low{Low} & OP Streamer & Open \\
+\hline
+\caption{Complete Vulnerability List}
+\end{longtable}
+
+\newpage
+
+\section{Scope and Methodology}
+
+\subsection{Audit Scope}
+
+This audit covers the following components:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{OP Streamer Component} (\texttt{espresso/})
+    \begin{itemize}
+        \item \texttt{batch\_buffer.go} - Batch buffering and ordering logic
+        \item \texttt{streamer.go} - Espresso block streaming and batch processing
+        \item \texttt{buffered\_streamer.go} - Buffered streaming implementation
+    \end{itemize}
+
+    \item \textbf{TEE Contracts} (\texttt{espresso-tee-contracts})
+    \begin{itemize}
+        \item \texttt{EspressoNitroTEEVerifier.sol} - AWS Nitro attestation verification
+        \item \texttt{EspressoSGXTEEVerifier.sol} - Intel SGX attestation verification
+        \item \texttt{TEEHelper.sol} - Shared TEE helper functionality
+        \item Related interfaces and libraries
+    \end{itemize}
+\end{itemize}
+
+\subsection{Methodology}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Static Code Analysis}: Manual review of Go and Solidity source code
+    \item \textbf{Architecture Review}: Analysis of component interactions and data flow
+    \item \textbf{Attack Scenario Modeling}: Threat modeling for potential exploits
+    \item \textbf{Documentation Review}: Analysis of security documentation and deployment guides
+\end{itemize}
+
+\newpage
+
+\section{OP Streamer Component Vulnerabilities}
+
+\subsection{V-1: All-At-Once RPC Calls}
+
+\begin{tcolorbox}[colback=yellow!10,colframe=yellow!50,title=Vulnerability Summary]
+\textbf{Severity:} \medium{Medium} \\
+\textbf{Status:} Open \\
+\textbf{Component:} \texttt{espresso/streamer.go} - \texttt{CheckBatch()} and \texttt{processRemainingBatches()}
+\end{tcolorbox}
+
+\subsubsection{Description}
+
+The \texttt{CheckBatch} function makes synchronous L1 RPC calls (\texttt{HeaderHashByNumber}) when validating finalized batches. When multiple batches become finalized simultaneously, the system executes sequential synchronous RPC calls, causing the streamer to freeze.
+
+\subsubsection{Technical Details}
+
+\textbf{Vulnerable Code Path:}
+\begin{lstlisting}[language=Go]
+func CheckBatch(batch B, l1Origin eth.BlockID) {
+    if isFinalized(l1Origin) {
+        hash := HeaderHashByNumber(l1Origin.Number) // Synchronous RPC
+        // ... validation logic
+    }
+}
+\end{lstlisting}
+
+\textbf{Attack Scenario:}
+\begin{enumerate}
+    \item Node accumulates 500 batches in \texttt{RemainingBatches} while waiting for L1 finality
+    \item L1 finalizes a new state
+    \item \texttt{processRemainingBatches()} iterates all 500 batches
+    \item Finalized check now passes for all batches
+    \item System executes \textbf{500 sequential synchronous RPC calls} inside the \texttt{Update} loop
+\end{enumerate}
+
+\subsubsection{Impact}
+
+\begin{itemize}
+    \item \textbf{Availability}: Streamer freezes for seconds to minutes
+    \item \textbf{Denial of Service}: Node stops fetching new Espresso blocks
+    \item \textbf{Cascading Failure}: Downstream components dependent on streamer become blocked
+\end{itemize}
+
+\subsubsection{Recommendation}
+
+\begin{enumerate}
+    \item \textbf{Immediate}: Implement batch RPC calls using \texttt{eth\_getBlockByNumber} with multicall
+    \item \textbf{Short-term}: Add asynchronous RPC call handling with worker pool
+    \item \textbf{Long-term}: Cache L1 block hashes and implement rate limiting
+\end{enumerate}
+
+\newpage
+
+\subsection{V-2: Infinite Buffer Growth}
+
+\begin{tcolorbox}[colback=orange!10,colframe=orange!50,title=Vulnerability Summary]
+\textbf{Severity:} \high{High} \\
+\textbf{Status:} Open \\
+\textbf{Component:} \texttt{espresso/batch\_buffer.go} - \texttt{BatchBuffer} and \texttt{HasNext()}
+\end{tcolorbox}
+
+\subsubsection{Description}
+
+The \texttt{BatchBuffer} has no size limit and will accept batches indefinitely while waiting for a missing batch, leading to memory exhaustion and node crashes.
+
+\subsubsection{Technical Details}
+
+\textbf{Vulnerable Logic:}
+\begin{lstlisting}[language=Go]
+func (b *BatchBuffer[B]) HasNext() bool {
+    return b.Peek() == b.expectedBatchPos
+}
+\end{lstlisting}
+
+\textbf{Attack Scenario:}
+\begin{enumerate}
+    \item Node expects Batch \#100
+    \item Espresso network delivers Batch \#101, \#102, ... \#50,000
+    \item Batch \#100 is missing (network partition, Byzantine node, etc.)
+    \item \texttt{BatchBuffer} accepts and stores Batches \#101 through \#50,000 in memory
+    \item Node waits indefinitely for Batch \#100
+    \item Memory exhaustion → Node crash
+\end{enumerate}
+
+\subsubsection{Impact}
+
+\begin{itemize}
+    \item \textbf{Availability}: Node crashes due to out-of-memory (OOM)
+    \item \textbf{Denial of Service}: Missing batch prevents all downstream processing
+    \item \textbf{No Recovery}: No mechanism to invalidate the stream and skip missing batch
+\end{itemize}
+
+\subsubsection{Recommendation}
+
+\begin{enumerate}
+    \item \textbf{Critical}: Implement maximum buffer size (e.g., 1000 batches)
+    \item \textbf{Critical}: Add timeout for missing batches (e.g., 10 minutes)
+    \item \textbf{Important}: Implement gap detection and alerting
+    \item \textbf{Important}: Add mechanism to request missing batches from peers
+    \item \textbf{Long-term}: Implement stream reset when gap is detected beyond threshold
+\end{enumerate}
+
+\textbf{Suggested Implementation:}
+\begin{lstlisting}[language=Go]
+const MAX_BUFFER_SIZE = 1000
+const MISSING_BATCH_TIMEOUT = 10 * time.Minute
+
+func (b *BatchBuffer[B]) TryInsert(batch B) (int, bool) {
+    if len(b.batches) >= MAX_BUFFER_SIZE {
+        return 0, false  // Reject new batches
+    }
+
+    if batch.Number > b.expectedBatchPos {
+        if time.Since(b.lastProgressTime) > MISSING_BATCH_TIMEOUT {
+            // Log critical error and reset stream
+            return 0, false
+        }
+    }
+
+    // ... existing logic
+}
+\end{lstlisting}
+
+\newpage
+
+\subsection{V-7: Type Mismatch in Refresh()}
+
+\begin{tcolorbox}[colback=orange!10,colframe=orange!50,title=Vulnerability Summary]
+\textbf{Severity:} \high{High} \\
+\textbf{Status:} Open \\
+\textbf{Component:} \texttt{espresso/streamer.go} - \texttt{Refresh()} function, Line 173
+\end{tcolorbox}
+
+\subsubsection{Description}
+
+The \texttt{Refresh()} function contains a type mismatch where it compares \texttt{fallbackBatchPos} (representing a Batch Index) with \texttt{hotShotPos} (representing an Espresso Block Height). These are incompatible types that should not be directly compared.
+
+\subsubsection{Technical Details}
+
+\textbf{Vulnerable Code:}
+\begin{lstlisting}[language=Go]
+func (s *BatchStreamer[B]) Refresh(ctx context.Context,
+    finalizedL1 eth.L1BlockRef, safeBatchNumber uint64,
+    safeL1Origin eth.BlockID) error {
+    // Line 173
+    if fallbackBatchPos < hotShotPos {  // Type mismatch!
+        // ... logic
+    }
+}
+\end{lstlisting}
+
+\textbf{Issue:}
+\begin{itemize}
+    \item \texttt{fallbackBatchPos} is a \textbf{Batch Index} (sequential batch number)
+    \item \texttt{hotShotPos} is an \textbf{Espresso Block Height} (blockchain height)
+    \item Comparing these directly may lead to logic errors
+\end{itemize}
+
+\subsubsection{Impact}
+
+\begin{itemize}
+    \item \textbf{State Inconsistency}: Incorrect state transitions during batch processing
+    \item \textbf{Logic Error}: May cause unexpected behavior in edge cases
+    \item \textbf{Potential Data Loss}: Could skip or process wrong batches
+\end{itemize}
+
+\subsubsection{Recommendation}
+
+\begin{enumerate}
+    \item Review the comparison logic and ensure type compatibility
+    \item Add type-safe wrappers or explicit conversions
+    \item Document the relationship between batch index and block height
+    \item Add assertions to validate the comparison is meaningful
+\end{enumerate}
+
+\newpage
+
+\subsection{V-8 through V-14: Additional Low Severity Issues}
+
+\subsubsection{V-8: Missing Duplicate Detection}
+
+\textbf{Severity:} \low{Low} | \textbf{Status:} Open | \textbf{Component:} \texttt{batch\_buffer.go}
+
+The \texttt{Insert(batch B, i int)} function unconditionally inserts a batch without checking for duplicates, potentially causing data redundancy and memory waste.
+
+\subsubsection{V-9: Misleading Log Messages}
+
+\textbf{Severity:} \low{Low} | \textbf{Status:} Open | \textbf{Component:} \texttt{streamer.go}
+
+Lines 304 and 435 contain misleading and redundant log messages that make debugging more difficult and could confuse operators.
+
+\subsubsection{V-10: Inefficient Batch Overwrite}
+
+\textbf{Severity:} \low{Low} | \textbf{Status:} Open | \textbf{Component:} \texttt{streamer.go}
+
+Line 435 unnecessarily overwrites a batch in the \texttt{RemainingBatches} map when the batch already exists, performing redundant work.
+
+\subsubsection{V-11: Confusing Variable Naming}
+
+\textbf{Severity:} \low{Low} | \textbf{Status:} Open | \textbf{Component:} \texttt{cli.go}
+
+The configuration variable \texttt{PollingHotShotPollingInterval} contains redundant naming that reduces code readability.
+
+\subsubsection{V-12: Unused Constant Declaration}
+
+\textbf{Severity:} \low{Low} | \textbf{Status:} Open | \textbf{Component:} \texttt{espresso/}
+
+The constant \texttt{HOTSHOT\_BLOCK\_STREAM\_LIMIT} is defined but never used, leading to dead code.
+
+\subsubsection{V-13: Missing Sort Order Validation}
+
+\textbf{Severity:} \low{Low} | \textbf{Status:} Open | \textbf{Component:} \texttt{batch\_buffer.go}
+
+The \texttt{TryInsert()} function assumes the batch list is sorted and uses binary search without verifying this invariant.
+
+\subsubsection{V-14: No Network Failure Distinction}
+
+\textbf{Severity:} \low{Low} | \textbf{Status:} Open | \textbf{Component:} \texttt{streamer.go}
+
+The \texttt{confirmEspressoBlockHeight()} function returns \texttt{false} when RPC calls fail, making it impossible to distinguish between actual state verification and network errors.
+
+\newpage
+
+\section{TEE Enclave Vulnerabilities}
+
+\subsection{V-3: TEE Networking MitM Attack}
+
+\begin{tcolorbox}[colback=orange!10,colframe=orange!50,title=Vulnerability Summary]
+\textbf{Severity:} \high{High} \\
+\textbf{Status:} Open \\
+\textbf{Component:} TEE Enclave Networking Layer
+\end{tcolorbox}
+
+\subsubsection{Description}
+
+The TEE enclave networking layer lacks sufficient protection against Man-in-the-Middle (MitM) attacks, potentially allowing malicious actors to feed the enclave with arbitrary input, such as maliciously crafted HotShot blocks.
+
+\subsubsection{Technical Details}
+
+\textbf{Vulnerability:}
+\begin{itemize}
+    \item TEE networking layer does not enforce strict TLS certificate validation
+    \item No certificate pinning implemented
+    \item Enclave trusts any valid TLS certificate
+\end{itemize}
+
+\textbf{Attack Scenario:}
+\begin{enumerate}
+    \item Attacker positions themselves between TEE enclave and HotShot network
+    \item Attacker presents valid TLS certificate (e.g., from compromised CA)
+    \item TEE accepts connection as legitimate
+    \item Attacker injects malicious HotShot blocks
+    \item TEE processes fraudulent data as authentic
+\end{enumerate}
+
+\subsubsection{Impact}
+
+\begin{itemize}
+    \item \textbf{Integrity}: TEE processes malicious input as authentic
+    \item \textbf{Consensus Manipulation}: Fraudulent blocks could affect L2 state
+    \item \textbf{Trust Violation}: Undermines security guarantees of TEE
+\end{itemize}
+
+\subsubsection{Current Mitigation}
+
+Documentation exists at: \url{https://eng-wiki.espressosys.com/mainch36.html}
+
+However, implementation remains vulnerable.
+
+\subsubsection{Recommendation}
+
+\begin{enumerate}
+    \item \textbf{Critical}: Implement certificate pinning
+    \begin{itemize}
+        \item Embed expected certificates during enclave build
+        \item Include certificates in PCR0 hash measurement
+        \item Ensure enclave only trusts specific, validated endpoints
+    \end{itemize}
+
+    \item \textbf{Important}: Add certificate rotation mechanism
+    \begin{itemize}
+        \item Design automatic certificate update process
+        \item Implement gradual rollover to avoid service interruption
+    \end{itemize}
+
+    \item \textbf{Long-term}: Implement attestation-based mutual authentication
+    \begin{itemize}
+        \item Both endpoints verify each other's TEE attestations
+        \item Remove dependency on traditional PKI
+    \end{itemize}
+\end{enumerate}
+
+\newpage
+
+\section{TEE Contracts Vulnerabilities}
+
+The following vulnerabilities were identified and \textbf{fixed} in PR \#43 of the \texttt{espresso-tee-contracts} repository.
+
+\begin{tcolorbox}[colback=green!10,colframe=green!50,title=PR \#43 Summary]
+\textbf{Title:} Internal Audit \#2 - Security Fixes \\
+\textbf{Merged:} January 28, 2026 \\
+\textbf{Commit:} \texttt{1a5a179} \\
+\textbf{Files Changed:} 21 files (+1098, -250 lines) \\
+\textbf{Test Coverage:} 624 new test lines added
+\end{tcolorbox}
+
+\subsection{V-4: Cross-Chain Deployment Vulnerability}
+
+\begin{tcolorbox}[colback=red!10,colframe=red!50,title=Vulnerability Summary]
+\textbf{Severity:} \critical{Critical} \\
+\textbf{Status:} Fixed \\
+\textbf{Component:} \texttt{EspressoNitroTEEVerifier.sol}, \texttt{EspressoSGXTEEVerifier.sol} \\
+\textbf{Fix Reference:} Commit \texttt{57bf5de}, PR \#43
+\end{tcolorbox}
+
+\subsubsection{Description}
+
+TEE Verifier contracts maintain chain-specific on-chain state for registered enclaves and signers. However, attestations are not chain-specific by default, allowing replay attacks across different chains with inconsistent security policies.
+
+\subsubsection{Technical Details}
+
+\textbf{Vulnerable State Management:}
+\begin{lstlisting}[language=Java]
+// These mappings are stored ON-CHAIN (chain-specific):
+mapping(ServiceType => mapping(bytes32 => bool))
+    public registeredEnclaveHashes;
+mapping(ServiceType => mapping(address => bool))
+    public registeredServices;
+\end{lstlisting}
+
+\textbf{Problem:} State is local to each chain, but attestations can be replayed across chains.
+
+\subsubsection{Attack Scenarios}
+
+\textbf{Attack 1: Uncoordinated Revocation}
+
+\begin{itemize}
+    \item Day 1: Enclave hash approved on Ethereum and Arbitrum
+    \item Day 30: Vulnerability discovered in enclave
+    \item Day 31: Hash revoked on Ethereum
+    \item \textbf{Result:} Attacker blocked on Ethereum [OK] but still valid on Arbitrum [FAIL]
+\end{itemize}
+
+\textbf{Attack 2: Attestation Replay}
+
+\begin{enumerate}
+    \item TEE generates single attestation
+    \item Attacker registers on Ethereum using attestation
+    \item Attacker reuses \textbf{same attestation} on Arbitrum
+    \item Attacker reuses \textbf{same attestation} on Optimism
+    \item All registrations succeed (if hash is approved on each chain)
+\end{enumerate}
+
+\textbf{Attack 3: Policy Inconsistency}
+
+\begin{itemize}
+    \item Ethereum: High security, only approves hash v2.0 (latest, secure)
+    \item Arbitrum: Different governance, approves hash v1.0 (old, vulnerable)
+    \item \textbf{Result:} Same codebase, different security across chains
+\end{itemize}
+
+\subsubsection{Impact}
+
+\begin{itemize}
+    \item \textbf{Security Fragmentation}: Inconsistent security policies across chains
+    \item \textbf{Delayed Response}: Vulnerability on one chain doesn't automatically propagate
+    \item \textbf{Replay Attacks}: Single attestation usable on multiple chains
+\end{itemize}
+
+\subsubsection{Fix Applied}
+
+Added Security Considerations section in README.md documenting multi-chain deployment risks and best practices.
+
+\newpage
+
+\subsection{V-5: Signer Deletion DoS Attack}
+
+\begin{tcolorbox}[colback=orange!10,colframe=orange!50,title=Vulnerability Summary]
+\textbf{Severity:} \high{High} \\
+\textbf{Status:} Fixed \\
+\textbf{Component:} \texttt{TEEHelper.sol} \\
+\textbf{Fix Reference:} Commit \texttt{3026966}, PR \#43
+\end{tcolorbox}
+
+\subsubsection{Description}
+
+The TEE Helper contract iterates over a list of registered signers in deletion operations. An attacker could exploit unbounded loops to cause denial of service by exceeding block gas limits.
+
+\subsubsection{Attack Scenario}
+
+\begin{enumerate}
+    \item Attacker registers many signers (e.g., 10,000 addresses)
+    \item Enclave is compromised
+    \item Operator tries to revoke by calling \texttt{setEnclaveHash(hash, false)} and \texttt{deleteRegisteredSigners()}
+    \item \textbf{Deletion fails due to gas limit} - transaction reverts
+    \item \textbf{Compromised signers remain active} - security breach!
+\end{enumerate}
+
+\subsubsection{Impact}
+
+\begin{itemize}
+    \item \textbf{Security Bypass}: Unable to fully revoke compromised enclave access
+    \item \textbf{DoS on Critical Security Function}: Deletion operation required but impossible
+    \item \textbf{Persistent Vulnerability}: Compromised signers remain valid indefinitely
+\end{itemize}
+
+\subsubsection{Fix Applied in PR \#43}
+
+Changed the security model so that \textbf{deleting signers is no longer required}. Revoking an enclave hash via \texttt{setEnclaveHash(hash, false)} is now sufficient to prevent new malicious registrations.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{rccc}
+\toprule
+\textbf{Signers} & \textbf{Gas Cost} & \textbf{Block Limit (30M)} & \textbf{Status} \\
+\midrule
+100 & $\sim$500k & [OK] Safe & OK \\
+1,000 & $\sim$5M & [OK] Safe & OK \\
+5,000 & $\sim$25M & [WARN] Close & Risk \\
+10,000 & $\sim$50M & [FAIL] Over & DoS \\
+\bottomrule
+\end{tabular}
+\caption{Gas Cost Analysis}
+\end{table}
+
+\textbf{Why This Works:}
+\begin{itemize}
+    \item When an enclave is compromised, the private keys are already exposed to attackers
+    \item Existing signer addresses in the registry don't grant any additional attack surface
+    \item The security boundary is enforced at enclave hash validation, not signer presence
+    \item Revoking the hash immediately protects the system
+\end{itemize}
+
+\newpage
+
+\subsection{V-6: Missing TEE Journal Struct Validations}
+
+\begin{tcolorbox}[colback=red!10,colframe=red!50,title=Vulnerability Summary]
+\textbf{Severity:} \critical{Critical} \\
+\textbf{Status:} Fixed \\
+\textbf{Component:} \texttt{EspressoNitroTEEVerifier.sol} \\
+\textbf{Fix Reference:} Commit \texttt{c47d9aa}, PR \#43
+\end{tcolorbox}
+
+\subsubsection{Description}
+
+The VerifierJournal struct contains critical cryptographic fields (PCRs, public key, nonce, timestamp, userData) that require comprehensive validation. Missing validations could allow malformed attestations to be accepted, potentially leading to predictable signer addresses or other cryptographic attacks.
+
+\subsubsection{Technical Details}
+
+\textbf{Journal Structure:}
+\begin{lstlisting}[language=Java]
+struct VerifierJournal {
+    bytes32[] pcrs;          // Platform Configuration Registers
+    bytes publicKey;         // Enclave public key (should be 65 bytes)
+    bytes nonce;             // Replay protection
+    uint256 timestamp;       // Attestation time
+    bytes userData;          // Application data
+    string moduleId;         // Nitro module identifier
+    VerificationResult result;
+}
+\end{lstlisting}
+
+\subsubsection{Specific Vulnerabilities}
+
+\textbf{V-6a: Empty PCR Array}
+\begin{itemize}
+    \item \textbf{Issue}: No validation that PCR array contains data
+    \item \textbf{Impact}: Could accept attestations without platform measurements
+    \item \textbf{Exploit}: Bypass hardware attestation requirements
+\end{itemize}
+
+\textbf{V-6b: Invalid Public Key Format}
+\begin{itemize}
+    \item \textbf{Issue}: No check for correct public key length (65 bytes) and format
+    \item \textbf{Impact}: Malformed public keys could lead to predictable addresses
+\end{itemize}
+
+\textbf{V-6c: Predictable Signer Addresses}
+\begin{itemize}
+    \item \textbf{Issue}: Invalid public key formats can produce predictable Ethereum addresses
+    \item \textbf{Impact}: Attacker could precompute and claim desirable addresses
+    \item \textbf{Severity}: Enables address squatting and impersonation
+\end{itemize}
+
+\subsubsection{Fix Applied}
+
+Added comprehensive \texttt{\_validateJournal()} validation function:
+
+\begin{lstlisting}[language=Java]
+function _validateJournal(VerifierJournal memory journal)
+    internal view {
+    // 1. Validate PCR array bounds
+    require(journal.pcrs.length > 0, "PCR array cannot be empty");
+
+    // 2. CRITICAL: Validate public key format
+    require(journal.publicKey.length == 65,
+        "Invalid public key length");
+    require(journal.publicKey[0] == 0x04,
+        "Public key must be uncompressed");
+
+    // 3. Note: Nonce validation removed - AWS Nitro may have
+    //    empty nonce. Implement nonce tracking separately
+    //    if replay protection needed
+
+    // 4. Timestamp validation already done by NitroEnclaveVerifier
+    //    Result would be InvalidTimestamp if timestamp is bad
+}
+\end{lstlisting}
+
+\newpage
+
+\section{Conclusion}
+
+This security audit identified 14 vulnerabilities across the Optimism-Espresso integration codebase. While 3 critical and high-severity issues have been successfully addressed in PR \#43, 11 vulnerabilities remain open and require attention.
+
+\subsection{Priority Recommendations}
+
+\begin{enumerate}
+    \item \textbf{Immediate Action Required:}
+    \begin{itemize}
+        \item V-2: Implement buffer size limits to prevent memory exhaustion
+        \item V-3: Implement certificate pinning for TEE networking
+        \item V-7: Fix type mismatch in Refresh() function
+    \end{itemize}
+
+    \item \textbf{Short-term Improvements:}
+    \begin{itemize}
+        \item V-1: Optimize RPC call batching
+        \item Low-severity code quality issues (V-8 through V-14)
+    \end{itemize}
+
+    \item \textbf{Long-term Monitoring:}
+    \begin{itemize}
+        \item Continue monitoring fixed vulnerabilities
+        \item Implement comprehensive testing for edge cases
+        \item Regular security audits of new features
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Acknowledgments}
+
+This audit was conducted by the Internal Security Team at Espresso Systems. The team would like to thank the development team for their cooperation and prompt response to critical findings.
+
+\vspace{1cm}
+
+\hrule
+
+\vspace{0.5cm}
+
+\noindent\textbf{Last Updated:} January 29, 2026 \\
+\textbf{Version:} 1.0 \\
+\textbf{Contact:} security@espressosys.com
+
+\end{document}
+
