@@ -1,125 +1,265 @@
 \documentclass[11pt,a4paper]{article}
 
-% Packages
+% ============================================================
+% PACKAGES
+% ============================================================
+
+% Encoding and fonts
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{geometry}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+% Page geometry
+\usepackage[a4paper, left=2.5cm, right=2.5cm, top=3.2cm, bottom=2.5cm, headheight=1.8cm, headsep=1cm]{geometry}
+
+% Graphics and drawing
 \usepackage{graphicx}
+\graphicspath{{internal-reviews/Integration/}{./}}
 \usepackage{xcolor}
-\usepackage{hyperref}
-\usepackage{tcolorbox}
-\usepackage{listings}
-\usepackage{fancyhdr}
-\usepackage{titlesec}
-\usepackage{enumitem}
+\usepackage{tikz}
+
+% Tables
 \usepackage{longtable}
 \usepackage{booktabs}
 
-% Page geometry
-\geometry{
-    a4paper,
-    margin=1in,
-    headheight=15pt
-}
+% Code listings
+\usepackage{listings}
 
-% Colors
-\definecolor{critical}{RGB}{220,38,38}
-\definecolor{high}{RGB}{234,88,12}
-\definecolor{medium}{RGB}{234,179,8}
-\definecolor{low}{RGB}{34,197,94}
-\definecolor{codebackground}{RGB}{248,248,248}
-\definecolor{linkcolor}{RGB}{37,99,235}
+% Links
+\usepackage{hyperref}
 
-% Hyperref setup
+% Headers and footers
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+% Section formatting
+\usepackage{titlesec}
+
+% Lists
+\usepackage{enumitem}
+
+% Colored boxes
+\usepackage{tcolorbox}
+
+% ============================================================
+% COLORS
+% ============================================================
+
+% Primary brand color (warm brown/copper)
+\definecolor{espressobrown}{RGB}{183,119,58}
+
+% Severity colors
+\definecolor{criticalred}{RGB}{200,30,30}
+\definecolor{highorange}{RGB}{220,100,20}
+\definecolor{mediumamber}{RGB}{180,140,0}
+\definecolor{lowblue}{RGB}{34,130,180}
+
+% Utility colors
+\definecolor{codebg}{RGB}{244,244,240}
+\definecolor{linkblue}{RGB}{37,99,235}
+\definecolor{codecomment}{RGB}{100,100,100}
+
+% ============================================================
+% HYPERREF SETUP
+% ============================================================
+
 \hypersetup{
     colorlinks=true,
-    linkcolor=linkcolor,
-    filecolor=linkcolor,
-    urlcolor=linkcolor,
-    citecolor=linkcolor,
-    pdftitle={Security Audit Report - Optimism-Espresso Integration},
-    pdfauthor={Internal Security Team},
+    linkcolor=linkblue,
+    filecolor=linkblue,
+    urlcolor=linkblue,
+    citecolor=linkblue,
+    pdftitle={Internal Security Audit Report - Optimism-Espresso Integration},
+    pdfauthor={Espresso Systems Internal Security Team},
     pdfsubject={Security Audit},
     pdfkeywords={Security, Audit, Optimism, Espresso, TEE}
 }
 
-% Code listing settings
+% ============================================================
+% CODE LISTING STYLE
+% ============================================================
+
 \lstset{
     basicstyle=\ttfamily\small,
-    backgroundcolor=\color{codebackground},
-    frame=single,
-    framesep=5pt,
+    backgroundcolor=\color{codebg},
+    frame=none,
+    framesep=8pt,
+    xleftmargin=12pt,
+    xrightmargin=12pt,
     breaklines=true,
     keepspaces=true,
     showstringspaces=false,
     columns=flexible,
-    tabsize=4
+    tabsize=4,
+    aboveskip=1.2em,
+    belowskip=1.2em,
+    keywordstyle=\bfseries,
+    commentstyle=\color{codecomment},
 }
 
-% Header and footer
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[L]{\small Security Audit Report}
-\fancyhead[R]{\small January 2026}
-\fancyfoot[C]{\thepage}
-\renewcommand{\headrulewidth}{0.4pt}
-\renewcommand{\footrulewidth}{0.4pt}
+% ============================================================
+% PARAGRAPH FORMATTING
+% ============================================================
 
-% Title formatting
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.7em}
+
+% ============================================================
+% HEADER AND FOOTER STYLES
+% ============================================================
+
+% Main page style with brown banner header
+\fancypagestyle{mainpages}{%
+    \fancyhf{}
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+    \fancyfoot[R]{\small\thepage{} / \pageref{LastPage}}
+    \fancyhead[L]{%
+        \begin{tikzpicture}[remember picture, overlay]
+            \fill[espressobrown]
+                (current page.north west) rectangle
+                ([yshift=-1.5cm]current page.north east);
+            % Logo in header
+            \node[anchor=west] at
+                ([xshift=1.2cm, yshift=-0.75cm]current page.north west)
+                {\espressologo{1cm}};
+            \node[anchor=west, text=white, font=\small\bfseries] at
+                ([xshift=2.5cm, yshift=-0.75cm]current page.north west)
+                {ESPRESSO SYSTEMS};
+            \node[anchor=east, text=white, font=\small] at
+                ([xshift=-2.5cm, yshift=-0.75cm]current page.north east)
+                {Internal Security Team};
+        \end{tikzpicture}%
+    }
+}
+
+% Cover page style (no header/footer)
+\fancypagestyle{coverpage}{%
+    \fancyhf{}
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+
+% Set default page style
+\pagestyle{mainpages}
+
+% ============================================================
+% SECTION FORMATTING
+% ============================================================
+
 \titleformat{\section}
-    {\Large\bfseries}{\thesection}{1em}{}
+    {\LARGE\bfseries}{\thesection}{0.5em}{}
 \titleformat{\subsection}
-    {\large\bfseries}{\thesubsection}{1em}{}
+    {\Large\bfseries}{\thesubsection}{0.5em}{}
 \titleformat{\subsubsection}
-    {\normalsize\bfseries}{\thesubsubsection}{1em}{}
+    {\large\bfseries}{\thesubsubsection}{0.5em}{}
 
-% Custom commands for severity badges
-\newcommand{\critical}[1]{\textcolor{critical}{\textbf{#1}}}
-\newcommand{\high}[1]{\textcolor{high}{\textbf{#1}}}
-\newcommand{\medium}[1]{\textcolor{medium}{\textbf{#1}}}
-\newcommand{\low}[1]{\textcolor{low}{\textbf{#1}}}
+\titlespacing*{\section}{0pt}{1.5em}{0.8em}
+\titlespacing*{\subsection}{0pt}{1.2em}{0.6em}
+\titlespacing*{\subsubsection}{0pt}{1em}{0.5em}
 
-% Title page
+% ============================================================
+% ESPRESSO LOGO (TikZ drawn coffee cup)
+% ============================================================
+
+% Reusable logo command: \espressologo{size}
+% Uses the actual Espresso Systems logo image
+\newcommand{\espressologo}[1]{%
+\includegraphics[height=#1]{espresso-logo.png}%
+}
+
+% ============================================================
+% SEVERITY COMMANDS
+% ============================================================
+
+\newcommand{\critical}[1]{\textcolor{criticalred}{\textbf{#1}}}
+\newcommand{\high}[1]{\textcolor{highorange}{\textbf{#1}}}
+\newcommand{\medium}[1]{\textcolor{mediumamber}{\textbf{#1}}}
+\newcommand{\low}[1]{\textcolor{lowblue}{\textbf{#1}}}
+
+% ============================================================
+% DOCUMENT
+% ============================================================
+
 \begin{document}
 
-\begin{titlepage}
-    \centering
-    \vspace*{2cm}
+% ---- COVER PAGE ----
+\thispagestyle{coverpage}
 
-    % Title with Espresso branding
-    {\fontsize{60}{72}\selectfont\textbf{ESPRESSO}\par}
-    \vspace{0.5cm}
-    {\Large\textit{Systems}\par}
-    \vspace{2cm}
+\begin{tikzpicture}[remember picture, overlay]
+    % Brown banner covering top portion
+    \fill[espressobrown]
+        (current page.north west) rectangle
+        ([yshift=-11cm]current page.north east);
 
-    {\Huge\bfseries Security Audit Report\par}
-    \vspace{1cm}
-    {\Large Optimism-Espresso Integration:\par}
-    {\Large OP Streamer \& TEE Contracts\par}
-    \vspace{2cm}
+    % Logo on cover page
+    \node[anchor=north west] at
+        ([xshift=2.3cm, yshift=-1.5cm]current page.north west)
+        {\espressologo{2.5cm}};
 
-    \begin{tcolorbox}[colback=gray!10,colframe=gray!50,width=0.8\textwidth,arc=3mm,boxrule=0.5pt]
-        \begin{tabular}{ll}
-            \textbf{Report Date:} & January 29, 2026 \\
-            \textbf{Audit Scope:} & OP Streamer Component \& TEE Contracts \\
-            \textbf{Version:} & v0.5.0 \\
-            \textbf{Auditors:} & Internal Security Team \\
-            \textbf{Status:} & Active Development \\
-        \end{tabular}
-    \end{tcolorbox}
+    % Espresso Systems branding (next to logo)
+    \node[anchor=north west, text=white, font=\fontsize{14}{16}\selectfont\bfseries] at
+        ([xshift=5cm, yshift=-2cm]current page.north west)
+        {ESPRESSO SYSTEMS};
 
-    \vfill
+    % Report title
+    \node[anchor=north west, text=white, font=\fontsize{26}{32}\selectfont] at
+        ([xshift=2.5cm, yshift=-4cm]current page.north west)
+        {Optimism-Espresso Integration};
 
-    {\large Espresso Systems\par}
-    {\large \today\par}
-\end{titlepage}
+    % Subtitle
+    \node[anchor=north west, text=white, font=\fontsize{14}{18}\selectfont] at
+        ([xshift=2.5cm, yshift=-5.8cm]current page.north west)
+        {Internal Security Audit: OP Streamer \& TEE Contracts};
 
-\tableofcontents
+    % Metadata -- left side
+    \node[anchor=north west, text=white, font=\small] at
+        ([xshift=2.5cm, yshift=-7.5cm]current page.north west)
+        {\begin{tabular}{@{}l@{}}
+            \textbf{Team:}\\
+            Internal Security Team\\
+            2026-01-29\\
+            v1.0
+        \end{tabular}};
+
+    % Metadata -- right side
+    \node[anchor=north east, text=white, font=\small] at
+        ([xshift=-2.5cm, yshift=-7.5cm]current page.north east)
+        {\begin{tabular}{@{}r@{}}
+            \textbf{Scope:}\\
+            OP Streamer Component\\
+            TEE Contracts\\
+            \textbf{security@espressosys.com}
+        \end{tabular}};
+\end{tikzpicture}
+
+\vspace*{9.5cm}
+
+% Table of Contents on the cover page
+{\LARGE\bfseries Table of Contents}
+
+\vspace{0.5em}
+
+{
+\renewcommand{\contentsname}{}
+\setcounter{tocdepth}{2}
+\makeatletter
+\@starttoc{toc}
+\makeatother
+}
+
 \newpage
+
+% ---- EXECUTIVE SUMMARY ----
 
 \section{Executive Summary}
 
 This report presents the findings of a security audit of the Optimism-Espresso integration, focusing on the OP Streamer component and TEE (Trusted Execution Environment) contracts. The audit identified \textbf{14 vulnerabilities} (2 Critical, 4 High, 1 Medium, 7 Low) across batch streaming logic, TEE networking, and smart contract implementations.
+
+\textbf{Key findings from this assessment include 2 Critical, 4 High, 1 Medium, and 7 Low vulnerabilities identified.} The critical and several high-severity issues have been addressed in PR \#43 of the espresso-tee-contracts repository. The remaining findings require attention to strengthen the overall security posture of the integration.
+
+We recommend addressing the identified findings through the standard development cycle and implementing the security recommendations outlined in the detailed findings section to further strengthen the overall security posture of the integrated platform.
 
 \subsection{Severity Distribution}
 
@@ -137,7 +277,6 @@ This report presents the findings of a security audit of the Optimism-Espresso i
 \textbf{Total} & \textbf{14} & \textbf{3} & \textbf{11} \\
 \bottomrule
 \end{tabular}
-\caption{Vulnerability Severity Distribution}
 \end{table}
 
 \subsection{Key Findings Summary}
@@ -181,10 +320,11 @@ V-13 & Missing Sort Order Validation & \low{Low} & OP Streamer & Open \\
 \hline
 V-14 & No Network Failure Distinction & \low{Low} & OP Streamer & Open \\
 \hline
-\caption{Complete Vulnerability List}
 \end{longtable}
 
 \newpage
+
+% ---- SCOPE AND METHODOLOGY ----
 
 \section{Scope and Methodology}
 
@@ -195,16 +335,16 @@ This audit covers the following components:
 \begin{itemize}[leftmargin=*]
     \item \textbf{OP Streamer Component} (\texttt{espresso/})
     \begin{itemize}
-        \item \texttt{batch\_buffer.go} - Batch buffering and ordering logic
-        \item \texttt{streamer.go} - Espresso block streaming and batch processing
-        \item \texttt{buffered\_streamer.go} - Buffered streaming implementation
+        \item \texttt{batch\_buffer.go} -- Batch buffering and ordering logic
+        \item \texttt{streamer.go} -- Espresso block streaming and batch processing
+        \item \texttt{buffered\_streamer.go} -- Buffered streaming implementation
     \end{itemize}
 
     \item \textbf{TEE Contracts} (\texttt{espresso-tee-contracts})
     \begin{itemize}
-        \item \texttt{EspressoNitroTEEVerifier.sol} - AWS Nitro attestation verification
-        \item \texttt{EspressoSGXTEEVerifier.sol} - Intel SGX attestation verification
-        \item \texttt{TEEHelper.sol} - Shared TEE helper functionality
+        \item \texttt{EspressoNitroTEEVerifier.sol} -- AWS Nitro attestation verification
+        \item \texttt{EspressoSGXTEEVerifier.sol} -- Intel SGX attestation verification
+        \item \texttt{TEEHelper.sol} -- Shared TEE helper functionality
         \item Related interfaces and libraries
     \end{itemize}
 \end{itemize}
@@ -220,21 +360,21 @@ This audit covers the following components:
 
 \newpage
 
+% ---- OP STREAMER COMPONENT VULNERABILITIES ----
+
 \section{OP Streamer Component Vulnerabilities}
 
 \subsection{V-1: All-At-Once RPC Calls}
 
-\begin{tcolorbox}[colback=yellow!10,colframe=yellow!50,title=Vulnerability Summary]
-\textbf{Severity:} \medium{Medium} \\
-\textbf{Status:} Open \\
-\textbf{Component:} \texttt{espresso/streamer.go} - \texttt{CheckBatch()} and \texttt{processRemainingBatches()}
-\end{tcolorbox}
+\textbf{Criticality:} \medium{Medium}\\
+\textbf{Status:} Open\\
+\textbf{Component:} \texttt{espresso/streamer.go} -- \texttt{CheckBatch()} and \texttt{processRemainingBatches()}
 
-\subsubsection{Description}
+\subsubsection{Overview}
 
 The \texttt{CheckBatch} function makes synchronous L1 RPC calls (\texttt{HeaderHashByNumber}) when validating finalized batches. When multiple batches become finalized simultaneously, the system executes sequential synchronous RPC calls, causing the streamer to freeze.
 
-\subsubsection{Technical Details}
+\subsubsection{Description}
 
 \textbf{Vulnerable Code Path:}
 \begin{lstlisting}[language=Go]
@@ -275,17 +415,15 @@ func CheckBatch(batch B, l1Origin eth.BlockID) {
 
 \subsection{V-2: Infinite Buffer Growth}
 
-\begin{tcolorbox}[colback=orange!10,colframe=orange!50,title=Vulnerability Summary]
-\textbf{Severity:} \high{High} \\
-\textbf{Status:} Open \\
-\textbf{Component:} \texttt{espresso/batch\_buffer.go} - \texttt{BatchBuffer} and \texttt{HasNext()}
-\end{tcolorbox}
+\textbf{Criticality:} \high{High}\\
+\textbf{Status:} Open\\
+\textbf{Component:} \texttt{espresso/batch\_buffer.go} -- \texttt{BatchBuffer} and \texttt{HasNext()}
 
-\subsubsection{Description}
+\subsubsection{Overview}
 
 The \texttt{BatchBuffer} has no size limit and will accept batches indefinitely while waiting for a missing batch, leading to memory exhaustion and node crashes.
 
-\subsubsection{Technical Details}
+\subsubsection{Description}
 
 \textbf{Vulnerable Logic:}
 \begin{lstlisting}[language=Go]
@@ -301,7 +439,7 @@ func (b *BatchBuffer[B]) HasNext() bool {
     \item Batch \#100 is missing (network partition, Byzantine node, etc.)
     \item \texttt{BatchBuffer} accepts and stores Batches \#101 through \#50,000 in memory
     \item Node waits indefinitely for Batch \#100
-    \item Memory exhaustion → Node crash
+    \item Memory exhaustion leads to node crash
 \end{enumerate}
 
 \subsubsection{Impact}
@@ -347,17 +485,15 @@ func (b *BatchBuffer[B]) TryInsert(batch B) (int, bool) {
 
 \subsection{V-7: Type Mismatch in Refresh()}
 
-\begin{tcolorbox}[colback=orange!10,colframe=orange!50,title=Vulnerability Summary]
-\textbf{Severity:} \high{High} \\
-\textbf{Status:} Open \\
-\textbf{Component:} \texttt{espresso/streamer.go} - \texttt{Refresh()} function, Line 173
-\end{tcolorbox}
+\textbf{Criticality:} \high{High}\\
+\textbf{Status:} Open\\
+\textbf{Component:} \texttt{espresso/streamer.go} -- \texttt{Refresh()} function, Line 173
 
-\subsubsection{Description}
+\subsubsection{Overview}
 
 The \texttt{Refresh()} function contains a type mismatch where it compares \texttt{fallbackBatchPos} (representing a Batch Index) with \texttt{hotShotPos} (representing an Espresso Block Height). These are incompatible types that should not be directly compared.
 
-\subsubsection{Technical Details}
+\subsubsection{Description}
 
 \textbf{Vulnerable Code:}
 \begin{lstlisting}[language=Go]
@@ -401,63 +537,63 @@ func (s *BatchStreamer[B]) Refresh(ctx context.Context,
 
 \subsubsection{V-8: Missing Duplicate Detection}
 
-\textbf{Severity:} \low{Low} | \textbf{Status:} Open | \textbf{Component:} \texttt{batch\_buffer.go}
+\textbf{Criticality:} \low{Low} \quad \textbf{Status:} Open \quad \textbf{Component:} \texttt{batch\_buffer.go}
 
 The \texttt{Insert(batch B, i int)} function unconditionally inserts a batch without checking for duplicates, potentially causing data redundancy and memory waste.
 
 \subsubsection{V-9: Misleading Log Messages}
 
-\textbf{Severity:} \low{Low} | \textbf{Status:} Open | \textbf{Component:} \texttt{streamer.go}
+\textbf{Criticality:} \low{Low} \quad \textbf{Status:} Open \quad \textbf{Component:} \texttt{streamer.go}
 
 Lines 304 and 435 contain misleading and redundant log messages that make debugging more difficult and could confuse operators.
 
 \subsubsection{V-10: Inefficient Batch Overwrite}
 
-\textbf{Severity:} \low{Low} | \textbf{Status:} Open | \textbf{Component:} \texttt{streamer.go}
+\textbf{Criticality:} \low{Low} \quad \textbf{Status:} Open \quad \textbf{Component:} \texttt{streamer.go}
 
 Line 435 unnecessarily overwrites a batch in the \texttt{RemainingBatches} map when the batch already exists, performing redundant work.
 
 \subsubsection{V-11: Confusing Variable Naming}
 
-\textbf{Severity:} \low{Low} | \textbf{Status:} Open | \textbf{Component:} \texttt{cli.go}
+\textbf{Criticality:} \low{Low} \quad \textbf{Status:} Open \quad \textbf{Component:} \texttt{cli.go}
 
 The configuration variable \texttt{PollingHotShotPollingInterval} contains redundant naming that reduces code readability.
 
 \subsubsection{V-12: Unused Constant Declaration}
 
-\textbf{Severity:} \low{Low} | \textbf{Status:} Open | \textbf{Component:} \texttt{espresso/}
+\textbf{Criticality:} \low{Low} \quad \textbf{Status:} Open \quad \textbf{Component:} \texttt{espresso/}
 
 The constant \texttt{HOTSHOT\_BLOCK\_STREAM\_LIMIT} is defined but never used, leading to dead code.
 
 \subsubsection{V-13: Missing Sort Order Validation}
 
-\textbf{Severity:} \low{Low} | \textbf{Status:} Open | \textbf{Component:} \texttt{batch\_buffer.go}
+\textbf{Criticality:} \low{Low} \quad \textbf{Status:} Open \quad \textbf{Component:} \texttt{batch\_buffer.go}
 
 The \texttt{TryInsert()} function assumes the batch list is sorted and uses binary search without verifying this invariant.
 
 \subsubsection{V-14: No Network Failure Distinction}
 
-\textbf{Severity:} \low{Low} | \textbf{Status:} Open | \textbf{Component:} \texttt{streamer.go}
+\textbf{Criticality:} \low{Low} \quad \textbf{Status:} Open \quad \textbf{Component:} \texttt{streamer.go}
 
 The \texttt{confirmEspressoBlockHeight()} function returns \texttt{false} when RPC calls fail, making it impossible to distinguish between actual state verification and network errors.
 
 \newpage
 
+% ---- TEE ENCLAVE VULNERABILITIES ----
+
 \section{TEE Enclave Vulnerabilities}
 
 \subsection{V-3: TEE Networking MitM Attack}
 
-\begin{tcolorbox}[colback=orange!10,colframe=orange!50,title=Vulnerability Summary]
-\textbf{Severity:} \high{High} \\
-\textbf{Status:} Open \\
+\textbf{Criticality:} \high{High}\\
+\textbf{Status:} Open\\
 \textbf{Component:} TEE Enclave Networking Layer
-\end{tcolorbox}
 
-\subsubsection{Description}
+\subsubsection{Overview}
 
 The TEE enclave networking layer lacks sufficient protection against Man-in-the-Middle (MitM) attacks, potentially allowing malicious actors to feed the enclave with arbitrary input, such as maliciously crafted HotShot blocks.
 
-\subsubsection{Technical Details}
+\subsubsection{Description}
 
 \textbf{Vulnerability:}
 \begin{itemize}
@@ -514,32 +650,33 @@ However, implementation remains vulnerable.
 
 \newpage
 
+% ---- TEE CONTRACTS VULNERABILITIES ----
+
 \section{TEE Contracts Vulnerabilities}
 
 The following vulnerabilities were identified and \textbf{fixed} in PR \#43 of the \texttt{espresso-tee-contracts} repository.
 
-\begin{tcolorbox}[colback=green!10,colframe=green!50,title=PR \#43 Summary]
-\textbf{Title:} Internal Audit \#2 - Security Fixes \\
-\textbf{Merged:} January 28, 2026 \\
-\textbf{Commit:} \texttt{1a5a179} \\
-\textbf{Files Changed:} 21 files (+1098, -250 lines) \\
+\begin{tcolorbox}[colback=gray!5, colframe=gray!40, boxrule=0.5pt, arc=0mm]
+\textbf{PR \#43 Summary}\\[0.3em]
+\textbf{Title:} Internal Audit \#2 -- Security Fixes\\
+\textbf{Merged:} January 28, 2026\\
+\textbf{Commit:} \texttt{1a5a179}\\
+\textbf{Files Changed:} 21 files (+1098, -250 lines)\\
 \textbf{Test Coverage:} 624 new test lines added
 \end{tcolorbox}
 
 \subsection{V-4: Cross-Chain Deployment Vulnerability}
 
-\begin{tcolorbox}[colback=red!10,colframe=red!50,title=Vulnerability Summary]
-\textbf{Severity:} \critical{Critical} \\
-\textbf{Status:} Fixed \\
-\textbf{Component:} \texttt{EspressoNitroTEEVerifier.sol}, \texttt{EspressoSGXTEEVerifier.sol} \\
+\textbf{Criticality:} \critical{Critical}\\
+\textbf{Status:} Fixed\\
+\textbf{Component:} \texttt{EspressoNitroTEEVerifier.sol}, \texttt{EspressoSGXTEEVerifier.sol}\\
 \textbf{Fix Reference:} Commit \texttt{57bf5de}, PR \#43
-\end{tcolorbox}
 
-\subsubsection{Description}
+\subsubsection{Overview}
 
 TEE Verifier contracts maintain chain-specific on-chain state for registered enclaves and signers. However, attestations are not chain-specific by default, allowing replay attacks across different chains with inconsistent security policies.
 
-\subsubsection{Technical Details}
+\subsubsection{Description}
 
 \textbf{Vulnerable State Management:}
 \begin{lstlisting}[language=Java]
@@ -597,25 +734,24 @@ Added Security Considerations section in README.md documenting multi-chain deplo
 
 \subsection{V-5: Signer Deletion DoS Attack}
 
-\begin{tcolorbox}[colback=orange!10,colframe=orange!50,title=Vulnerability Summary]
-\textbf{Severity:} \high{High} \\
-\textbf{Status:} Fixed \\
-\textbf{Component:} \texttt{TEEHelper.sol} \\
+\textbf{Criticality:} \high{High}\\
+\textbf{Status:} Fixed\\
+\textbf{Component:} \texttt{TEEHelper.sol}\\
 \textbf{Fix Reference:} Commit \texttt{3026966}, PR \#43
-\end{tcolorbox}
 
-\subsubsection{Description}
+\subsubsection{Overview}
 
 The TEE Helper contract iterates over a list of registered signers in deletion operations. An attacker could exploit unbounded loops to cause denial of service by exceeding block gas limits.
 
-\subsubsection{Attack Scenario}
+\subsubsection{Description}
 
+\textbf{Attack Scenario:}
 \begin{enumerate}
     \item Attacker registers many signers (e.g., 10,000 addresses)
     \item Enclave is compromised
     \item Operator tries to revoke by calling \texttt{setEnclaveHash(hash, false)} and \texttt{deleteRegisteredSigners()}
-    \item \textbf{Deletion fails due to gas limit} - transaction reverts
-    \item \textbf{Compromised signers remain active} - security breach!
+    \item \textbf{Deletion fails due to gas limit} -- transaction reverts
+    \item \textbf{Compromised signers remain active} -- security breach!
 \end{enumerate}
 
 \subsubsection{Impact}
@@ -642,7 +778,6 @@ Changed the security model so that \textbf{deleting signers is no longer require
 10,000 & $\sim$50M & [FAIL] Over & DoS \\
 \bottomrule
 \end{tabular}
-\caption{Gas Cost Analysis}
 \end{table}
 
 \textbf{Why This Works:}
@@ -657,18 +792,16 @@ Changed the security model so that \textbf{deleting signers is no longer require
 
 \subsection{V-6: Missing TEE Journal Struct Validations}
 
-\begin{tcolorbox}[colback=red!10,colframe=red!50,title=Vulnerability Summary]
-\textbf{Severity:} \critical{Critical} \\
-\textbf{Status:} Fixed \\
-\textbf{Component:} \texttt{EspressoNitroTEEVerifier.sol} \\
+\textbf{Criticality:} \critical{Critical}\\
+\textbf{Status:} Fixed\\
+\textbf{Component:} \texttt{EspressoNitroTEEVerifier.sol}\\
 \textbf{Fix Reference:} Commit \texttt{c47d9aa}, PR \#43
-\end{tcolorbox}
 
-\subsubsection{Description}
+\subsubsection{Overview}
 
 The VerifierJournal struct contains critical cryptographic fields (PCRs, public key, nonce, timestamp, userData) that require comprehensive validation. Missing validations could allow malformed attestations to be accepted, potentially leading to predictable signer addresses or other cryptographic attacks.
 
-\subsubsection{Technical Details}
+\subsubsection{Description}
 
 \textbf{Journal Structure:}
 \begin{lstlisting}[language=Java]
@@ -732,6 +865,8 @@ function _validateJournal(VerifierJournal memory journal)
 
 \newpage
 
+% ---- CONCLUSION ----
+
 \section{Conclusion}
 
 This security audit identified 14 vulnerabilities across the Optimism-Espresso integration codebase. While 3 critical and high-severity issues have been successfully addressed in PR \#43, 11 vulnerabilities remain open and require attention.
@@ -760,19 +895,68 @@ This security audit identified 14 vulnerabilities across the Optimism-Espresso i
     \end{itemize}
 \end{enumerate}
 
-\subsection{Acknowledgments}
+\newpage
 
-This audit was conducted by the Internal Security Team at Espresso Systems. The team would like to thank the development team for their cooperation and prompt response to critical findings.
+% ---- LIST OF CHANGES ----
+
+\section{List of Changes}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llll}
+\toprule
+\textbf{Version} & \textbf{Date} & \textbf{Description} & \textbf{Author} \\
+\midrule
+0.1 & 2026-01-27 & Initial draft with findings & Internal Security Team \\
+0.5 & 2026-01-28 & Added PR \#43 fix details & Internal Security Team \\
+1.0 & 2026-01-29 & Final report & Internal Security Team \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ---- DISCLAIMER ----
+
+\section{Disclaimer}
+
+This report is a comprehensive review of in-scope items and should not be considered an endorsement or disapproval of any facet of the Espresso Systems software platform. It does not guarantee or provide any warranty regarding the absolute continuity of the analyzed technologies. Nor does it reflect the economics, value, business model, or legal compliance of such products. This report should not be used to make any investment decisions, nor does it constitute investment advice. This report serves as a comprehensive evaluation of the technology and constituent components, aimed at improving the overall security posture of the platform.
+
+% ---- SEVERITY SCALE ----
+
+\section{Severity Measurement Scale}
+
+Espresso Systems measures severity using in-house expertise along with industry standard methodologies as outlined in the Open Web Application Security Project (OWASP) and the Common Vulnerability Scoring System (CVSS).
+
+The severity of each finding in this report is established after the conclusion of rigorous testing, in accordance with the threat model outlined in the statement of work. We evaluate the severity of findings in isolation, irrespective of other findings. A vulnerability's overall business and technical impact is correlated to its score, where a higher score corresponds to higher business and technological impact, and lower scores are less severe.
+
+\vspace{1em}
+
+\begin{tabular}{@{}>{\bfseries\Large}p{3.5cm}p{12cm}@{}}
+\critical{Critical} &
+Vulnerabilities that score ``high'' but additionally pose a severe business or security impact. Examples of this could be threats to human safety, major financial loss, or existential risks to operations. These require immediate remediation. \\[1em]
+
+\high{High} &
+Vulnerabilities that pose a significant risk to the business, such as unauthorized access to sensitive data or administrative functionality. These require prompt remediation but are not immediately existential to business operations. \\[1em]
+
+\medium{Medium} &
+Vulnerabilities that do not cause immediate harm but may be used to escalate privileges, pivot within a network, or gather information useful for future attacks. These warrant timely attention to reduce long-term risk. \\[1em]
+
+\low{Low} &
+Vulnerabilities with minimal security impact that are unlikely to be exploited but may still improve overall posture if addressed. Examples include weak password policies, outdated libraries, or directory listing on web servers. \\[1em]
+\end{tabular}
+
+% ---- IMPRINT ----
+
+\newpage
+
+\section{Imprint}
+
+Espresso Systems\\
+Internal Security Team\\
+security@espressosys.com
 
 \vspace{1cm}
 
-\hrule
-
-\vspace{0.5cm}
-
-\noindent\textbf{Last Updated:} January 29, 2026 \\
-\textbf{Version:} 1.0 \\
-\textbf{Contact:} security@espressosys.com
+\noindent\textbf{Last Updated:} January 29, 2026\\
+\textbf{Version:} 1.0
 
 \end{document}
-

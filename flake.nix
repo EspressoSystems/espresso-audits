@@ -48,6 +48,9 @@
             algorithms
             # PDF tools
             pdfpages
+            # Additional fonts and utilities
+            psnfss  # Contains helvet (Helvetica)
+            lastpage
             ;
         };
 
