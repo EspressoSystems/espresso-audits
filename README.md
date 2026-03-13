@@ -25,3 +25,4 @@ Internal audits
 | Nitro Upgrade (Stateless Batcher V1) May 12, 2025                    | [Link](./internal-reviews/Integration/StatelessBatcherV1-2025internal.pdf)            |
 | OP Audit_report July 31, 2025                                        | [Link](./internal-reviews/Integration/EspressoOP2025internal.pdf)                     |
 | Staketable Review May 12, 2025                                       | [Link](./internal-reviews/Espresso-network/EspressoStaketable-2025internal.pdf)       |
+| Internal Security Audit: OP Streamer & TEE Contracts January 30, 2026                  | [Link](./internal-reviews/Integration/internal_report_30_january_2026.pdf)            | 
