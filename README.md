@@ -27,3 +27,4 @@ Internal audits
 | OP Audit_report July 31, 2025                                        | [Link](./internal-reviews/Integration/EspressoOP2025internal.pdf)                     |
 | Staketable Review May 12, 2025                                       | [Link](./internal-reviews/Espresso-network/EspressoStaketable-2025internal.pdf)       |
 | Internal Security Audit: OP Streamer & TEE Contracts January 30, 2026                  | [Link](./internal-reviews/Integration/OPStreamerTEEContracts-2026internal.pdf)      |
+| OP Streamer Audit March 2026                                         | [Link](./internal-reviews/Integration/OPStreamerAuditMarch2026.pdf)                   |
